@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ShaadiCard</string>
+    <string name="accept">Invitation Accepted</string>
+    <string name="decline">Invitation Declined</string>
+</resources>
