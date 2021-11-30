@@ -1,9 +1,7 @@
 package com.android.shaadicard.vm
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.android.domain.models.UserModel
 import com.android.domain.usecases.GetSavedUserUseCase
 import com.android.domain.usecases.GetUserUseCase
@@ -22,10 +20,7 @@ class MainViewModel(
     private val saveUserUseCase: SaveUserUseCase,
     private val getSavedUserUseCase: GetSavedUserUseCase,
     private val updateSavedUserUseCase: UpdateSavedUserUseCase
-) : AndroidViewModel(app) {
-    init {
-        getUser()
-    }
+) : AndroidViewModel(app), DefaultLifecycleObserver {
 
     private fun getUser() = viewModelScope.launch(Dispatchers.IO) {
         if (Utils.isNetworkAvailable(app)) {
@@ -54,5 +49,10 @@ class MainViewModel(
 
     fun updateUser(id: Int, status: String) = viewModelScope.launch(Dispatchers.IO) {
         updateSavedUserUseCase.execute(id, status)
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        getUser()
     }
 }

@@ -11,6 +11,8 @@ import com.android.domain.utils.Resource
 import com.android.shaadicard.R
 import com.android.shaadicard.adapter.UserAdapter
 import com.android.shaadicard.databinding.ActivityMainBinding
+import com.android.shaadicard.utils.hide
+import com.android.shaadicard.utils.show
 import com.android.shaadicard.vm.MainViewModel
 import com.android.shaadicard.vm.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
+        lifecycle.addObserver(viewModel)
 
         userAdapter.setOnItemClickListener { i, s ->
             viewModel.updateUser(i, s)
@@ -45,8 +48,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun viewUser() {
         viewModel.getSavedUsers().observe(this@MainActivity, {
-            Timber.d(it.toString())
-            userAdapter.differ.submitList(it)
+            Timber.d(it.size.toString())
+            if (it.isNotEmpty()) {
+                Timber.d(it.toString())
+                userAdapter.differ.submitList(it)
+                binding.recyclerView.show()
+                binding.textViewNoData.hide()
+            } else {
+                binding.recyclerView.hide()
+                binding.textViewNoData.show()
+            }
         })
     }
 
