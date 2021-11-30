@@ -10,6 +10,7 @@ import com.android.domain.usecases.GetUserUseCase
 import com.android.domain.usecases.SaveUserUseCase
 import com.android.domain.usecases.UpdateSavedUserUseCase
 import com.android.domain.utils.Resource
+import com.android.shaadicard.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -27,18 +28,20 @@ class MainViewModel(
     }
 
     private fun getUser() = viewModelScope.launch(Dispatchers.IO) {
-        when (val users = getUserUseCase.execute()) {
-            is Resource.Loading -> {
+        if (Utils.isNetworkAvailable(app)) {
+            when (val users = getUserUseCase.execute()) {
+                is Resource.Loading -> {
 
-            }
-            is Resource.Success -> {
-                users.data?.let {
-                    Timber.d(it.toString())
-                    saveUserUseCase.execute(it)
                 }
-            }
-            is Resource.Error -> {
+                is Resource.Success -> {
+                    users.data?.let {
+                        Timber.d(it.toString())
+                        saveUserUseCase.execute(it)
+                    }
+                }
+                is Resource.Error -> {
 
+                }
             }
         }
     }
